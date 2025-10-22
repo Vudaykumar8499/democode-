@@ -1,0 +1,27 @@
+# azure-pipelines.yml
+trigger:
+- main   # pipeline runs when you push to main branch
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+# Step 1: Show files (for debugging)
+- script: |
+    echo "Project files:"
+    ls -l
+  displayName: 'List project files'
+
+# Step 2: Copy files to artifact folder
+- task: CopyFiles@2
+  inputs:
+    SourceFolder: '$(Build.SourcesDirectory)'
+    Contents: '**/*.html\n**/*.css\n**/*.js'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)'
+
+# Step 3: Publish artifact (so it can be deployed later)
+- task: PublishBuildArtifacts@1
+  inputs:
+    pathToPublish: '$(Build.ArtifactStagingDirectory)'
+    artifactName: 'drop'
+    publishLocation: 'Container'
